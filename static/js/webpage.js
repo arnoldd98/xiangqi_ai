@@ -21,9 +21,7 @@
         }
     }
 
-    // TODO: change to get move from flask api and update board. Currently: making random move)
-    function makeAIMove() {
-        
+    function makeRandomMove() {
         let possibleMoves = game.moves();
 
         if (possibleMoves.length === 0) return;
@@ -32,6 +30,25 @@
         game.move(possibleMoves[randomIdx]);
         board.position(game.fen());
         updateStatus()
+    }
+
+    function makeAIMove() {
+        let possibleMoves = game.moves();
+        let fen = game.fen();
+        $.ajax({
+            url: '/ai/move',
+            type: 'POST',
+            data: ({
+                'fen': fen, 
+                'possible_moves': possibleMoves
+            }),
+            success: function (response) {
+                console.log(response)
+                game.move(response.move);
+                board.position(game.fen());
+                updateStatus();
+            }
+        })
     }
 
     function onDrop (source, target) {
@@ -106,14 +123,7 @@
           };
         board = Xiangqiboard('board', config);
         updateStatus();
-        // post('/fen')
-        //     .then(function (response) {
-        //         return response.json();
-        //     })
-        //     .then(function (text) {
-        //         console.log('Response: ');
-        //         console.log(text);
-        //     });
+        
         $('#startBtn').on('click', board.start)
         $('#clearBtn').on('click', board.clear)
 

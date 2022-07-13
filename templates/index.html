@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>xiangqiboardjs.com &raquo; Homepage</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
-    <link rel="stylesheet" href="css/xiangqiboard-0.3.3.min.css"/>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/xiangqiboard-0.3.3.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
 </head>
 
 <body class="homepage">
@@ -44,9 +44,9 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="js/xiangqiboard-0.3.3.min.js"></script>
-<script src="js/xiangqi.min.js"></script>
-<script src="js/webpage.js"></script>
+<script src="{{ url_for('static', filename='js/xiangqiboard-0.3.3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/xiangqi.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/webpage.js') }}"></script>
 
 <div id="gamemode_dialog" title="Choose your opponent">
     <button id="vs_computer_btn">vs. AI</button>
