@@ -2,7 +2,7 @@
     let game = new Xiangqi()
     let $status = $('#status')
     let $fen = $('#fen')
-    let gamemode = 'vs_human'
+    let gamemode = 'vs_computer'
 
     function isTouchDevice () {
         return ('ontouchstart' in document.documentElement)
@@ -35,6 +35,7 @@
     function makeAIMove() {
         let possibleMoves = game.moves();
         let fen = game.fen();
+        console.log(board.position())
         $.ajax({
             url: '/ai/move',
             type: 'POST',
