@@ -19,7 +19,7 @@ def ai_move():
     # rand_idx = random.randrange(0, len(moves))
     # results = {'move': moves[rand_idx]}
     inf = float('inf')
-    best_move = minimax(Board(moves, fen), 5, -inf, inf, True, 'r')[0]
+    best_move = minimax(Board(moves, fen), 3, -inf, inf, True, 'r')[0]
     results = {'move': best_move}
     return jsonify(results)
 
