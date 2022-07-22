@@ -25,6 +25,7 @@ import copy
         a1 b1 c1 d1 e1 f1 g1 h1 i1
         a0 b0 c0 d0 e0 f0 g0 h0 i0
 '''
+
 ROW_LENGTH = 10
 COL_LENGTH = 9
 COL = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8}
@@ -80,31 +81,62 @@ class Board:
     def undo(self):
         self.board = copy.deepcopy(self.prev_board)
 
-    def get_piece(self, position):
+    def get_piece(self, position = '', row_idx=-1, col_idx=-1):
+        if row_idx != -1 and col_idx != -1:
+            return self.board[row_idx][col_idx]
         row_idx, col_idx = self._get_idx_from_position(position)
         return self.board[row_idx][col_idx]
+    
+    def get_position(self, piece):
+        for row_idx, row in enumerate(self.board):
+            for col_idx, piece_ in enumerate(row):
+                if piece_ == piece:
+                    return self._get_position_from_idx((row_idx, col_idx))
+        return None
 
-    def generate_moves(self):
-        legal_moves = {side: [] for side in ['r', 'b']}
+    def generate_moves(self, side):
+        '''
+            Generate all possible moves for the current board
+        '''
+        legal_moves = []
         for row_idx, row in enumerate(self.board):
             for col_idx, piece in enumerate(row):
-                assert piece[0] in ['r', 'b']
+                if piece[0] != side:
+                        continue
                 side = piece[0]
                 position_idx = (row_idx, col_idx)
                 if piece[1] == 'K':
-                    legal_moves[piece[0]].extend(self._generate_king_moves(position_idx, side))
+                    legal_moves.extend(self._generate_king_moves(position_idx, side))
                 elif piece[1] == 'A':
-                    legal_moves[piece[0]].extend(self._generate_advisor_moves(position_idx, side))
+                    legal_moves.extend(self._generate_advisor_moves(position_idx, side))
                 elif piece[1] == 'R':
-                    legal_moves[piece[0]].extend(self._generate_rook_moves(position_idx, side))
+                    legal_moves.extend(self._generate_rook_moves(position_idx, side))
                 elif piece[1] == 'C':
-                    legal_moves[piece[0]].extend(self._generate_cannon_moves(position_idx, side))
+                    legal_moves.extend(self._generate_cannon_moves(position_idx, side))
                 elif piece[1] == 'B':
-                    legal_moves[piece[0]].extend(self._generate_elephant_moves(position_idx, side))
+                    legal_moves.extend(self._generate_elephant_moves(position_idx, side))
                 elif piece[1] == 'P':
-                    legal_moves[piece[0]].extend(self._generate_pawn_moves(position_idx, side))
+                    legal_moves.extend(self._generate_pawn_moves(position_idx, side))
                 elif piece[1] == 'N':
-                    legal_moves[piece[0]].extend(self._generate_horse_moves(position_idx, side))
+                    legal_moves.extend(self._generate_horse_moves(position_idx, side))
+
+        if self.is_check(side):
+            for move in legal_moves:
+                
+                    
+        return legal_moves
+    
+    def is_check(self, side):
+        '''
+            Check if the given side is in check
+        '''
+        general_position = self.get_position(side + 'K')
+        opp = 'r' if side == 'r' else 'b'
+        moves = self.generate_moves(opp)
+        for move in moves:
+            if move[2:4] == general_position:
+                return True
+        return False
 
     def _get_idx_from_position(self, position):
         row_idx = int(position[1])
@@ -121,6 +153,7 @@ class Board:
         else:
             return 'r' + fen_piece.upper()
 
+    # TODO: implement flying general, check for check before generating moves
     def _generate_king_moves(self, position_idx, side):
         moves = []
         opp = 'r' if side == 'b' else 'b'
@@ -134,11 +167,31 @@ class Board:
             new_col_idx = col_idx + action[1]
             if new_row_idx > 8 or new_row_idx < 0 or new_col_idx > 9 or new_col_idx < 0:
                 continue
-            new_pos = self.board[new_row_idx][new_col_idx]
-            if new_pos == '.' or new_pos[0] == opp:
+            new_board_slot = self.board[new_row_idx][new_col_idx]
+            new_pos = self._get_position_from_idx((new_row_idx, new_col_idx))
+            if new_board_slot == '.' or new_board_slot[0] == opp:
                 if new_pos in legal_positions:
-                    move = self._get_position_from_idx(position_idx) + new_pos
-                    moves.append(move)
+                    # check for flying general
+                    front_idx = new_col_idx
+                    opp_general = opp + 'K'
+                    invalid = True
+                    if side == 'r':
+                        while self.board[new_row_idx][front_idx] != opp_general:
+                            front_idx += 1
+                            if front_idx == 9 or self.board[new_row_idx][front_idx] != '.':
+                                invalid = False
+                                break
+                            
+                    elif side == 'b':
+                        while self.board[new_row_idx][front_idx] != opp_general:
+                            front_idx -= 1
+                            if front_idx == 0 or self.board[new_row_idx][front_idx] != '.':
+                                invalid = False
+                                break
+
+                    if not invalid:
+                        move = self._get_position_from_idx(position_idx) + new_pos
+                        moves.append(move) 
         return moves
 
     def _generate_advisor_moves(self, position_idx, side):
@@ -308,7 +361,6 @@ class Board:
                 moves.append(move)
         return moves
 
-        
 
 
 
