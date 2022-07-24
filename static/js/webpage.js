@@ -69,6 +69,8 @@
         if (gamemode === 'vs_computer') {
             window.setTimeout(makeAIMove, 250);
         }
+
+        console.log('FEN String: ', game.fen())
     }
 
     // update the board position after the piece snap
