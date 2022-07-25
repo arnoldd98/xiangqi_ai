@@ -112,6 +112,8 @@
         }
 
         graveUpdated = false;
+        console.log('FEN String: ', game.fen())
+
     }
 
     // update the board position after the piece snap
