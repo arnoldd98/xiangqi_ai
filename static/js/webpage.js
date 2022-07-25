@@ -4,6 +4,36 @@
     let $fen = $('#fen')
     let gamemode = 'vs_computer'
 
+    let $player1 = $('#player1');
+    let $player2 = $('#player2');
+    let $loading1 = $('#loading1');
+    let $loading2 = $('#loading2');
+    let $grave1 = $("#grave1");
+    let $grave2 = $("#grave2");
+    let botMoveInfo = null;
+    let player1MoveInfo = null;
+    let player2MoveInfo = null;
+    let graveUpdated = false;
+
+    let grave1= {
+        '兵':0 , //p
+        '炮':0 , //c
+        '車':0 , //r
+        '馬':0 , //n
+        '象':0 , //b
+        '士':0 , //a
+        '将':0 , //k
+    };
+    let grave2= {
+        '兵':0 ,
+        '炮':0 ,
+        '車':0 ,
+        '馬':0 ,
+        '象':0 ,
+        '士':0 ,
+        '将':0 ,
+    }
+
     function isTouchDevice () {
         return ('ontouchstart' in document.documentElement)
     }
@@ -45,7 +75,7 @@
             }),
             success: function (response) {
                 console.log(response)
-                game.move(response.move);
+                botMoveInfo = game.move(response.move);
                 board.position(game.fen());
                 updateStatus();
             }
@@ -63,12 +93,25 @@
         // illegal move
         if (move === null) return 'snapback';
         
+        // assign values to different fields when vs_human
+        if (gamemode == 'vs_human'){
+            if (move.color == 'r'){
+                player1MoveInfo = move;
+            }
+            if (move.color == 'b'){
+                player2MoveInfo = move;
+            } 
+        }
+        
         updateStatus();
 
         // let AI make move after set delay
         if (gamemode === 'vs_computer') {
+            player1MoveInfo = move;
             window.setTimeout(makeAIMove, 250);
         }
+
+        graveUpdated = false;
     }
 
     // update the board position after the piece snap
@@ -98,6 +141,62 @@
         // game still on
         else {
           status = moveColor + ' to move';
+
+          //loading png shown
+          if (moveColor == 'Red'){
+            $loading2.show();
+            $loading1.hide();
+          }
+          else{
+            $loading1.show();
+            $loading2.hide();
+          }
+
+          // Update graveyards
+          if (botMoveInfo != null && graveUpdated == false){
+            if  (botMoveInfo.flags == 'c' && botMoveInfo.color == 'b'){
+                if (botMoveInfo.captured == 'p') {grave2['兵']++} else
+                if (botMoveInfo.captured == 'c') {grave2['炮']++} else
+                if (botMoveInfo.captured == 'r') {grave2['車']++} else
+                if (botMoveInfo.captured == 'n') {grave2['馬']++} else
+                if (botMoveInfo.captured == 'b') {grave2['象']++} else
+                if (botMoveInfo.captured == 'a') {grave2['士']++} else
+                if (botMoveInfo.captured == 'k') {grave2['将']++}
+            }
+          }
+
+          if (player1MoveInfo != null && graveUpdated == false){
+            if  (player1MoveInfo.flags == 'c' && player1MoveInfo.color == 'r' && moveColor == 'Red' ){
+                if (player1MoveInfo.captured == 'p') {grave1['兵']++} else
+                if (player1MoveInfo.captured == 'c') {grave1['炮']++} else
+                if (player1MoveInfo.captured == 'r') {grave1['車']++} else
+                if (player1MoveInfo.captured == 'n') {grave1['馬']++} else
+                if (player1MoveInfo.captured == 'b') {grave1['象']++} else
+                if (player1MoveInfo.captured == 'a') {grave1['士']++} else
+                if (player1MoveInfo.captured == 'k') {grave1['将']++}
+            }
+          }
+
+          if (player2MoveInfo != null && graveUpdated == false){
+            if  (player2MoveInfo.flags == 'c' && player2MoveInfo.color == 'b' && moveColor == 'Black'){
+                if (player2MoveInfo.captured == 'p') {grave2['兵']++} else
+                if (player2MoveInfo.captured == 'c') {grave2['炮']++} else
+                if (player2MoveInfo.captured == 'r') {grave2['車']++} else
+                if (player2MoveInfo.captured == 'n') {grave2['馬']++} else
+                if (player2MoveInfo.captured == 'b') {grave2['象']++} else
+                if (player2MoveInfo.captured == 'a') {grave2['士']++} else
+                if (player2MoveInfo.captured == 'k') {grave2['将']++}
+            }
+          }
+
+          // ensure grave updated
+          graveUpdated = true;
+
+            // grave1=JSON.stringify(player1MoveInfo);
+            // $grave1.html(grave1);
+
+          $grave1.html(formattedGrave(grave1));
+          $grave2.html(formattedGrave(grave2));
       
           // check?
           if (game.in_check()) {
@@ -111,6 +210,8 @@
 
     function resetGame() {
         game.reset();
+        resetGrave();
+        resetMoveInfo();
         updateStatus();
         board.start();
     }
@@ -153,6 +254,38 @@
         })
     }
 
+    function formattedGrave(text){
+        return (
+            '兵:' + text['兵'] + '<br/>' +
+            '炮:' + text['炮'] + '<br/>' +
+            '車:' + text['車'] + '<br/>' +
+            '馬:' + text['馬'] + '<br/>' +
+            '象:' + text['象'] + '<br/>' +
+            '士:' + text['士'] + '<br/>' +
+            '将:' + text['将'] + '<br/>' 
+        );
+    }
+    function resetGrave(){
+        grave1['兵'] = 0;
+        grave1['士'] = 0;
+        grave1['将'] = 0;
+        grave1['炮'] = 0;
+        grave1['象'] = 0;
+        grave1['車'] = 0;
+        grave1['馬'] = 0;
+        grave2['兵'] = 0;
+        grave2['士'] = 0;
+        grave2['将'] = 0;
+        grave2['炮'] = 0;
+        grave2['象'] = 0;
+        grave2['車'] = 0;
+        grave2['馬'] = 0;
+    }
+    function resetMoveInfo(){
+        botMoveInfo=null;
+        player1MoveInfo=null;
+        player2MoveInfo=null;
+    }
     $(document).ready(init)
 })()
 

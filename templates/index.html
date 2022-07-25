@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
 </head>
 
-<body class="homepage">
+<body class="homepage" align ="center">
 
 <div>
     <h1>50.021 AI Project</h1>
@@ -19,12 +19,48 @@
 
 <main>
     <div>
+        <select id="selectmenu">
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Expert</option>
+            <option selected="selected">Plz select your level</option>
+        </select>
+        <button>Confirm</button>
+    </div>
+    <div>
         <button id="gamemode_btn">Change Gamemode</button>
+        
     </div>
     <section>
         <div>
             <div id="status"></div>
-            <div id="board" style="width: 450px"></div>
+            <div class="out">
+                <div id="player1">
+                    <img src="{{ url_for('static', filename='img/ui/bot.jpg') }}" height="100px" width="100px"/>
+                </div>
+                <div id="loading1">
+                    <img src="{{ url_for('static', filename='img/ui/loading.png') }}" height="50px" width="50px"/>
+                </div>
+                <div id="player2">
+                    <img src="{{ url_for('static', filename='img/ui/player.jpg') }}" height="100px" width="80px"/>
+                </div>
+                <div id="loading2">
+                    <img src="{{ url_for('static', filename='img/ui/loading.png') }}" height="50px" width="50px"/>
+                </div>
+
+                <div id="grave1">
+                    <p>車：1 <br/> 炮：2</p>
+                </div>
+                <div id="grave2">
+                    <p>車：1 <br/> 炮：2</p>
+                </div>
+                    
+                <div id="boardDiv">
+                    <div id="board" style="width: 450px; margin: auto"></div>
+                </div>
+                
+            </div>
+            
             <button id="startBtn">Start Position</button>
             <button id="clearBtn">Clear Board</button>
         </div>
@@ -52,5 +88,88 @@
     <button id="vs_computer_btn">vs. AI</button>
     <button id="vs_human_btn">vs. Human</button>
 </div>
+
+<style>
+    .out 
+    {
+        margin: auto;
+        width: 1000px;
+        /* height: 500px; */
+        border: 1px solid #060;
+        padding: 10px;
+    }
+    #player1
+    {
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgb(119, 2, 0);
+        float: left;
+        margin-top: 10px;
+        margin-left: 10px;
+        position: absolute;
+    }
+    #player2
+    {
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgb(119, 2, 0);
+        float: left;
+        margin-top: 260px;
+        margin-left: 10px;
+        position: absolute;
+
+    }
+    #boardDiv
+    {
+        margin: auto;
+        width: 460px;
+        height: 500px;
+        border: 1px solid rgb(27, 190, 255);
+        padding: 1px;
+    }
+    #loading1
+    {
+        width: 50px;
+        height: 50px;
+        border: 1px solid rgb(103, 255, 1);
+        /* float: left; */
+        margin-top: 10px;
+        margin-left: 120px;
+        position: absolute;
+        /* visibility: hidden; */
+    }
+    #loading2
+    {
+        width: 50px;
+        height: 50px;
+        border: 1px solid rgb(103, 255, 1);
+        /* float: left; */
+        margin-top: 260px;
+        margin-left: 120px;
+        position: absolute;
+        /* visibility: hidden; */
+    }
+    #grave1
+    {
+        width: 220px;
+        height: 200px;
+        border: 1px solid rgb(102, 0, 255);
+        /* float: right; */
+        margin-top: 10px;
+        margin-left: 750px;
+        position: absolute;    
+    }
+    #grave2
+    {
+        width: 220px;
+        height: 200px;
+        border: 1px solid rgb(102, 0, 255);
+        /* float: right; */
+        margin-top: 260px;
+        margin-left: 750px;
+        position: absolute;    
+    }
+</style>
+
 </body>
 </html>
