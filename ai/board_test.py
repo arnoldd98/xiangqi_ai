@@ -23,6 +23,10 @@ def base_tests():
 
     print('All base cases passed!')
 
+def custom_tests():
+    test_advisor_moves()
+    print('All custom cases passed!')
+
 def test_rook_moves(board=None, moves=None):
     if moves != None:   # base case
         rook = 'bR'
@@ -74,6 +78,21 @@ def test_advisor_moves(board=None, moves=None):
             if move[0:2] == advisor_pos:
                 advisor_moves.append(move)
         assert set(advisor_moves) == set(['d9e8'])
+    else: 
+        board = Board(fen='rnbakabnr/9/4c2c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/4K4/RNBA1ABNR',
+                     current_side='r')
+        moves = board.generate_moves('r')
+        advisor = 'rA'
+        positions = board.get_position(advisor)
+        assert set(positions) == set(['d0', 'f0'])
+
+        advisor_pos = 'f0'
+        advisor_moves = []
+        for move in moves:
+            if move[0:2] == advisor_pos:
+                advisor_moves.append(move)
+        assert len(advisor_moves) == 0
+
 
 def test_general_moves(board=None, moves=None):
     if moves != None:   # base case
@@ -127,12 +146,22 @@ def test_check():
     board1 = Board(fen=fen_1)
     assert board1.is_check(board1.side)
 
-    print('Check test passed!')
 
     fen_2 = 'rn1akabnr/9/1c2b3c/p1p1p1p1p/9/4C4/P1P1P1P1P/1C7/9/RNBAKABNR'
     board2 = Board(fen=fen_2)
     assert not board2.is_check(board2.side)
+
+    fen_3 = '3a1a3/3k4r/n3b1ccb/2p3p1p/C8/9/P1P1P1P1P/4r4/R8/2BAKABNR'
+    board3 = Board(fen=fen_3)
+    assert board3.is_check('r')
+
+    fen_4 = '2ba1abnr/r2k5/n8/p1pC2p1p/9/4c1C2/PcP1P1P1P/6N2/9/RNBAKAB1R'
+    board4 = Board(fen=fen_4)
+    assert board4.is_check('r')
+    print('Check test passed!')
+
 if __name__ == "__main__":
     base_tests()
+    custom_tests()
     test_checkmate()
     test_check()
