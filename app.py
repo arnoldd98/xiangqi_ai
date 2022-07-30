@@ -4,6 +4,7 @@ import random
 import sys, os
 from ai.minimax import minimax
 from ai.board import Board
+import time
 
 app = Flask(__name__)
 
@@ -19,7 +20,13 @@ def ai_move():
     # rand_idx = random.randrange(0, len(moves))
     # results = {'move': moves[rand_idx]}
     inf = float('inf')
-    best_move = minimax(Board(moves, fen), 3, -inf, inf, True, 'b')[0]
+    
+    start = time.time() # measure time of execution for algorithm
+
+    best_move = minimax(Board(fen=fen), 3, -inf, inf, True, 'b')[0]
+
+    end = time.time()
+    print('Time taken to run minimax: ', end - start)
     results = {'move': best_move}
     return jsonify(results)
 

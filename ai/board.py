@@ -1,7 +1,6 @@
 from cmath import pi
 import copy
 from copy import deepcopy
-from numpy import histogram
 from prettyprinter import pprint
 from collections import deque
 
@@ -57,14 +56,28 @@ BOARD_POSITIONS = [
     ['a0', 'b0', 'c0', 'd0', 'e0', 'f0', 'g0', 'h0', 'i0']
 ]
 
+BOARD_POSITIONS_DICT = {
+    'a9': (0, 0), 'b9': (1, 0), 'c9': (2, 0), 'd9': (3, 0), 'e9': (4, 0), 'f9': (5, 0), 'g9': (6, 0), 'h9': (7, 0), 'i9': (8, 0),
+    'a8': (0, 1), 'b8': (1, 1), 'c8': (2, 1), 'd8': (3, 1), 'e8': (4, 1), 'f8': (5, 1), 'g8': (6, 1), 'h8': (7, 1), 'i8': (8, 1),
+    'a7': (0, 2), 'b7': (1, 2), 'c7': (2, 2), 'd7': (3, 2), 'e7': (4, 2), 'f7': (5, 2), 'g7': (6, 2), 'h7': (7, 2), 'i7': (8, 2),
+    'a6': (0, 3), 'b6': (1, 3), 'c6': (2, 3), 'd6': (3, 3), 'e6': (4, 3), 'f6': (5, 3), 'g6': (6, 3), 'h6': (7, 3), 'i6': (8, 3),
+    'a5': (0, 4), 'b5': (1, 4), 'c5': (2, 4), 'd5': (3, 4), 'e5': (4, 4), 'f5': (5, 4), 'g5': (6, 4), 'h5': (7, 4), 'i5': (8, 4),
+    'a4': (0, 5), 'b4': (1, 5), 'c4': (2, 5), 'd4': (3, 5), 'e4': (4, 5), 'f4': (5, 5), 'g4': (6, 5), 'h4': (7, 5), 'i4': (8, 5),
+    'a3': (0, 6), 'b3': (1, 6), 'c3': (2, 6), 'd3': (3, 6), 'e3': (4, 6), 'f3': (5, 6), 'g3': (6, 6), 'h3': (7, 6), 'i3': (8, 6),
+    'a2': (0, 7), 'b2': (1, 7), 'c2': (2, 7), 'd2': (3, 7), 'e2': (4, 7), 'f2': (5, 7), 'g2': (6, 7), 'h2': (7, 7), 'i2': (8, 7),
+    'a1': (0, 8), 'b1': (1, 8), 'c1': (2, 8), 'd1': (3, 8), 'e1': (4, 8), 'f1': (5, 8), 'g1': (6, 8), 'h1': (7, 8), 'i1': (8, 8),
+    'a0': (0, 9), 'b0': (1, 9), 'c0': (2, 9), 'd0': (3, 9), 'e0': (4, 9), 'f0': (5, 9), 'g0': (6, 9), 'h0': (7, 9), 'i0': (8, 9)
+}
+
+
+
 '''
     Helper class for board, which contains the current state of the Xiangqi board and possible moves it can take
 '''
 class Board:
-    def __init__(self, possible_moves=None, fen=None, current_side='b'):
+    def __init__(self, fen=None, current_side='b'):
         self.board = self.fen_to_board(fen) if fen else self.fen_to_board(START_FEN)
         self.start = True
-        self.moves = possible_moves
         self.side = current_side
         self.check = '.'
         self.history = deque()
@@ -90,9 +103,9 @@ class Board:
         self.side = side
 
     def get_moves(self):
-        if self.start or self.moves == None:
-            self.start = False
-            return self.moves
+        # if self.start and not self.moves == None:
+        #     self.start = False
+        #     return self.moves
         
         return self.generate_moves(self.side)
         
@@ -196,6 +209,7 @@ class Board:
         '''
         if len(self.get_position_idx(side + 'K')) == 0:
             print('ERROR: NO KING WTF')
+            print('Side: ', side)
             pprint(self.board)
 
         general_position_idx = self.get_position_idx(side + 'K')[0]
@@ -262,11 +276,12 @@ class Board:
         return False
 
     def _get_idx_from_position(self, position):
-        for row_idx, row in enumerate(BOARD_POSITIONS):
-            for col_idx, piece in enumerate(row):
-                if piece == position:
-                    return col_idx, row_idx
-        return None
+        # for row_idx, row in enumerate(BOARD_POSITIONS):
+        #     for col_idx, piece in enumerate(row):
+        #         if piece == position:
+        #             return col_idx, row_idx
+        # return None
+        return BOARD_POSITIONS_DICT[position]
     
     def _get_position_from_idx(self, position_idx):
         col_idx, row_idx = position_idx
@@ -374,16 +389,14 @@ class Board:
         # check for horizontal moves
         for direction in [-1, 1]:
             limit_x = col_idx
-            while (limit_x > 0 and direction == -1) or (limit_x < COL_LENGTH-1 and direction == 1):
+            while (limit_x > 0 and direction == -1) or (limit_x < COL_LENGTH-1 and direction  == 1):
                 limit_x += direction
                 new_pos = self.board[row_idx][limit_x]
                 if new_pos == '.':
                     moves.append(position + self._get_position_from_idx((limit_x, row_idx)))
                 elif new_pos[0] == opp:
-                    if new_pos[1] == 'K':
-                        print('Move:',  position + self._get_position_from_idx((limit_x, row_idx)))
-                        print('Is Check: ', self.is_check(opp))
                     moves.append(position + self._get_position_from_idx((limit_x, row_idx)))
+                    break
                 elif new_pos[0] == side:
                     break
 
@@ -397,6 +410,7 @@ class Board:
                     moves.append(position + self._get_position_from_idx((col_idx, limit_y)))
                 elif new_pos[0] == opp:
                     moves.append(position + self._get_position_from_idx((col_idx, limit_y)))
+                    break
                 elif new_pos[0] == side:
                     break
         return moves
@@ -419,10 +433,6 @@ class Board:
                 elif new_pos != '.' and not skipped:
                     skipped = True
                 elif new_pos[0] == opp and skipped:
-                    if new_pos[1] == 'K':
-                        print('Move:',  position + self._get_position_from_idx((limit_x, row_idx)))
-                        print('Is Check: ', self.is_check(opp))
-                        pprint(self.board)
                     moves.append(position + self._get_position_from_idx((limit_x, row_idx)))
                     break
                 elif new_pos[0] == side and skipped:
@@ -440,8 +450,7 @@ class Board:
                 elif new_pos != '.' and not skipped:
                     skipped = True
                 elif new_pos[0] == opp and skipped:
-                    if new_pos[1] == 'K':
-                        moves.append(position + self._get_position_from_idx((col_idx, limit_y)))
+                    moves.append(position + self._get_position_from_idx((col_idx, limit_y)))
                     break
                 elif new_pos[0] == side and skipped:
                     break
@@ -487,7 +496,7 @@ class Board:
                 if self.board[row_idx+1][col_idx][0] != side:
                     moves.append(position + self._get_position_from_idx((col_idx, row_idx + 1)))
             if row_idx >= 5:
-                if col_idx <= 8:
+                if col_idx < 8:
                     if self.board[row_idx][col_idx+1][0] != side:
                         moves.append(position + self._get_position_from_idx((col_idx + 1, row_idx)))
                 if col_idx > 0:

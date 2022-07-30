@@ -25,6 +25,7 @@ def base_tests():
 
 def custom_tests():
     test_advisor_moves()
+    test_rook_moves()
     print('All custom cases passed!')
 
 def test_rook_moves(board=None, moves=None):
@@ -39,6 +40,11 @@ def test_rook_moves(board=None, moves=None):
             if move[0:2] == rook_pos:
                 rook_moves.append(move)
         assert set(rook_moves) == set(['a9a8', 'a9a7'])
+    else:
+        board_1 = Board(fen='4ka3/r3a4/1cc3n1b/p1p3p1p/4p4/9/P1P3P1P/4C4/R2R5/1NBAKABr1')
+
+        rook_moves = board_1._generate_rook_moves(board_1._get_idx_from_position('h0'), 'b')
+        assert set(rook_moves) == set(['h0g0', 'h0i0', 'h0h1', 'h0h2', 'h0h3', 'h0h4', 'h0h5', 'h0h6', 'h0h7', 'h0h8', 'h0h9'])
 
 def test_horse_moves(board=None, moves=None):
     if moves != None:   # base case
@@ -158,9 +164,28 @@ def test_check():
     fen_4 = '2ba1abnr/r2k5/n8/p1pC2p1p/9/4c1C2/PcP1P1P1P/6N2/9/RNBAKAB1R'
     board4 = Board(fen=fen_4)
     assert board4.is_check('r')
+
+    fen_5 = '2ba1abnr/r2k5/n6c1/p1p1C1p1p/9/4C4/PcP1P1P1P/9/3R5/RNBAKABN1'
+    board5 = Board(fen=fen_5)
+    assert board5.is_check('b')
+    assert set(board5.get_moves()) == set(['h7d7'])
+    board5.make_move('h7d7', change_side=True)
+    board5.make_move('d1d7', change_side=True)
+    assert board5.side == 'b'
+    assert board5.is_check('b')
+    assert set(board5.get_moves()) == set(['d8d7'])
+
+    fen_6 = '1R2kabnr/r3a4/4b2c1/p1p1n1p1p/9/6C2/P1P1P1P1P/9/9/1NBAKABN1'
+    board6 = Board(fen=fen_6)
+    assert board6.is_check('b')
+    assert set(board6.get_moves()) == set(['e8d9', 'e7c9'])
+
     print('Check test passed!')
 
+
+
 if __name__ == "__main__":
+    board = Board(fen=BASE_FEN)
     base_tests()
     custom_tests()
     test_checkmate()

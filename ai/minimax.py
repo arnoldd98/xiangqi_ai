@@ -1,7 +1,7 @@
 from math import inf
 import random
 from ai.board import Board
-from ai.evaluation import basic_evaluation
+from ai.evaluation import basic_evaluation, points_evaluation
 # from evaluation import basic_evaluation
 
 '''
@@ -9,8 +9,8 @@ from ai.evaluation import basic_evaluation
 '''
 def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour):
     moves = board.get_moves()
-    if depth == 0 or len(moves) == 0: # if no possible moves, checkmate
-        return None, basic_evaluation(board, maximizing_colour)
+    if depth == 0 or board.is_checkmate(): # if no possible moves, checkmate
+        return None, points_evaluation(board, maximizing_colour)
     best_move = random.choice(moves)
     if maximizing_player:
         max_eval = -inf
