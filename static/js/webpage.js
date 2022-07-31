@@ -304,7 +304,7 @@
             else {
                 return (
                     '<font color="black">' + 
-                    ' Red move: ' + 
+                    ' Black move: ' + 
                     ' Piece ' + text['piece'] +
                     ' From ' + text['from'] +
                     ' To ' + text['to'] +
