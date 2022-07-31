@@ -2,6 +2,7 @@
     let game = new Xiangqi()
     let $status = $('#status')
     let $fen = $('#fen')
+    let $history = $('#history')
     let gamemode = 'vs_computer'
 
     let $player1 = $('#player1');
@@ -76,6 +77,7 @@
             success: function (response) {
                 console.log(response)
                 botMoveInfo = game.move(response.move);
+                updateHistory(formattedHistory(botMoveInfo));
                 board.position(game.fen());
                 updateStatus();
             }
@@ -97,9 +99,11 @@
         if (gamemode == 'vs_human'){
             if (move.color == 'r'){
                 player1MoveInfo = move;
+                updateHistory(formattedHistory(player1MoveInfo))
             }
             if (move.color == 'b'){
                 player2MoveInfo = move;
+                updateHistory(formattedHistory(player2MoveInfo))
             } 
         }
         
@@ -108,6 +112,7 @@
         // let AI make move after set delay
         if (gamemode === 'vs_computer') {
             player1MoveInfo = move;
+            updateHistory(formattedHistory(player1MoveInfo));
             window.setTimeout(makeAIMove, 250);
         }
 
@@ -168,7 +173,7 @@
           }
 
           if (player1MoveInfo != null && graveUpdated == false){
-            if  (player1MoveInfo.flags == 'c' && player1MoveInfo.color == 'r' && moveColor == 'Red' ){
+            if  (player1MoveInfo.flags == 'c' && player1MoveInfo.color == 'r' && moveColor == 'Black' ){
                 if (player1MoveInfo.captured == 'p') {grave1['兵']++} else
                 if (player1MoveInfo.captured == 'c') {grave1['炮']++} else
                 if (player1MoveInfo.captured == 'r') {grave1['車']++} else
@@ -180,7 +185,7 @@
           }
 
           if (player2MoveInfo != null && graveUpdated == false){
-            if  (player2MoveInfo.flags == 'c' && player2MoveInfo.color == 'b' && moveColor == 'Black'){
+            if  (player2MoveInfo.flags == 'c' && player2MoveInfo.color == 'b' && moveColor == 'Red'){
                 if (player2MoveInfo.captured == 'p') {grave2['兵']++} else
                 if (player2MoveInfo.captured == 'c') {grave2['炮']++} else
                 if (player2MoveInfo.captured == 'r') {grave2['車']++} else
@@ -214,6 +219,7 @@
         game.reset();
         resetGrave();
         resetMoveInfo();
+        resetHistory();
         updateStatus();
         board.start();
     }
@@ -255,7 +261,59 @@
             gamemode = 'vs_human'
         })
     }
-
+    function updateHistory(text){
+        $history.html($history.html()+ '<br/>' + text);
+        let historyBox = document.getElementById("history");
+        historyBox.scrollTop = historyBox.scrollHeight;
+    }
+    function formattedHistory(text){
+        if (text['color'] == 'r'){
+            if (text['flags'] == 'n'){
+                return (
+                    '<font color="red">' + 
+                    ' Red move: ' + 
+                    ' Piece ' + text['piece'] +
+                    ' From ' + text['from'] +
+                    ' To ' + text['to'] +
+                    '</font>'
+                );
+            }
+            else {
+                return (
+                    '<font color="red">' + 
+                    ' Red move: ' + 
+                    ' Piece ' + text['piece'] +
+                    ' From ' + text['from'] +
+                    ' To ' + text['to'] +
+                    ' Catch ' + text['captured'] +
+                    '</font>'
+                );
+            }
+        }
+        if (text['color'] == 'b'){
+            if (text['flags'] == 'n'){
+                return (
+                    '<font color="black">' + 
+                    ' Black move: ' + 
+                    ' Piece ' + text['piece'] +
+                    ' From ' + text['from'] +
+                    ' To ' + text['to'] +
+                    '</font>'
+                );
+            }
+            else {
+                return (
+                    '<font color="black">' + 
+                    ' Red move: ' + 
+                    ' Piece ' + text['piece'] +
+                    ' From ' + text['from'] +
+                    ' To ' + text['to'] +
+                    ' Catch ' + text['captured'] +
+                    '</font>'
+                );
+            }
+        }
+    }
     function formattedGrave(text){
         return (
             '兵:' + text['兵'] + '<br/>' +
@@ -266,6 +324,9 @@
             '士:' + text['士'] + '<br/>' +
             '将:' + text['将'] + '<br/>' 
         );
+    }
+    function resetHistory(){
+        $history.html("");
     }
     function resetGrave(){
         grave1['兵'] = 0;
