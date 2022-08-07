@@ -102,12 +102,25 @@ class Board:
     def set_side(self, side):
         self.side = side
 
-    def get_moves(self):
-        # if self.start and not self.moves == None:
-        #     self.start = False
-        #     return self.moves
-        
+    def get_moves(self):     
         return self.generate_moves(self.side)
+
+    def get_ordered_moves(self, side):
+        '''
+        Get a list of possible moves that are ordered based on their evaluation scores.
+        (Ascending order for black side - maximising)
+        (Descending order for red side - minimising)
+        '''
+        possible_moves = self.generate_moves(side)
+        
+        def move_score(move):
+            self.make_move(move)
+            score = points_evaluation(self, side)
+            self.undo()
+            return score
+
+        ordered_moves = sorted(possible_moves, key=move_score, reverse=side=='b')
+        return ordered_moves
         
     def make_move(self, move, change_side=False):
         initial = move[0:2]
@@ -198,23 +211,6 @@ class Board:
         self.moves = legal_moves
         
         return legal_moves
-
-    def get_ordered_moves(self, side):
-        '''
-        Get a list of possible moves that are ordered based on their evaluation scores.
-        (Ascending order for black side - maximising)
-        (Descending order for red side - minimising)
-        '''
-        possible_moves = self.generate_moves(side)
-        
-        def move_score(move):
-            self.make_move(move)
-            score = points_evaluation(self.board, side)
-            self.undo()
-            return score
-
-        ordered_moves = sorted(possible_moves, key=move_score, reverse=side=='b')
-        return ordered_moves
     
     def is_checkmate(self):
         moves = self.generate_moves(self.side)

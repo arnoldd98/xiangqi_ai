@@ -8,10 +8,10 @@ from ai.evaluation import basic_evaluation, points_evaluation
     Minimax algorithm with alpha-beta pruning
 '''
 def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour):
-    moves = board.get_moves()
+    moves = board.get_ordered_moves(board.side)
     if depth == 0 or board.is_checkmate(): # if no possible moves, checkmate
         return None, points_evaluation(board, maximizing_colour)
-    best_move = random.choice(moves)
+    best_move = None
     if maximizing_player:
         max_eval = -inf
         for move in moves:

@@ -83,13 +83,18 @@ def points_evaluation(board, side):
 
             if piece[0] == side:
                 if side == 'r':  
-                    side_row_idx = 10 - row_idx
+                    side_row_idx = 9 - row_idx
+                else:
+                    side_row_idx = row_idx
                 score += PIECE_SCORE[piece_type]
                 if piece_type in PIECE_POS_SCORE.keys():
                     score += PIECE_POS_SCORE[piece_type][side_row_idx][col_idx]
             elif piece[0] == opp:
                 if opp == 'r':
-                    side_row_idx = 10 - row_idx
+                    side_row_idx = 9 - row_idx
+                else:
+                    side_row_idx = row_idx
+                
                 score -= PIECE_SCORE[piece_type]
                 if piece_type in PIECE_POS_SCORE.keys():
                     score -= PIECE_POS_SCORE[piece_type][side_row_idx][col_idx]
