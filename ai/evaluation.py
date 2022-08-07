@@ -80,12 +80,20 @@ def points_evaluation(board, side):
             if piece[0] == '.':
                 continue
             piece_type = piece[1]
-            if side == 'r':
-                row_idx = 10 - row_idx
+
             if piece[0] == side:
+                if side == 'r':  
+                    side_row_idx = 10 - row_idx
                 score += PIECE_SCORE[piece_type]
                 if piece_type in PIECE_POS_SCORE.keys():
-                    score += PIECE_POS_SCORE[piece_type][row_idx][col_idx]
+                    score += PIECE_POS_SCORE[piece_type][side_row_idx][col_idx]
+            elif piece[0] == opp:
+                if opp == 'r':
+                    side_row_idx = 10 - row_idx
+                score -= PIECE_SCORE[piece_type]
+                if piece_type in PIECE_POS_SCORE.keys():
+                    score -= PIECE_POS_SCORE[piece_type][side_row_idx][col_idx]
+
 
     if board.is_check(side):
         score -= 50
