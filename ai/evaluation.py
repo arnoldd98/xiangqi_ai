@@ -21,7 +21,7 @@ def basic_evaluation(board, side):
 # piece evaluation scores as referenced from: 
 # 'Using AdaBoost to Implement Chinese Chess Evaluation Functions'
 # https://docplayer.net/27544684-Using-adaboost-to-implement-chinese-chess-evaluation-functions.html
-PIECE_SCORE = {'K': 30, 'P': 3, 'A': 6, 'B': 6, 'N': 12, 'C': 13.5, 'R': 27}
+PIECE_SCORE = {'K': 100, 'P': 3, 'A': 6, 'B': 6, 'N': 12, 'C': 13.5, 'R': 27}
 PIECE_POS_SCORE = {
     'P': [[0,  0,  0,  0,  0,  0,  0,  0,  0],
           [0,  0,  0,  0,  0,  0,  0,  0,  0],
@@ -29,9 +29,9 @@ PIECE_POS_SCORE = {
           [0,  0, -2,  0,  4,  0, -2,  0,  0],
           [2,  0,  8,  0,  8,  0,  8,  0,  2],
           [6,  12, 18, 18, 20, 18, 18, 12, 6],
-          [10, 20, 30, 34, 40, 34, 30, 20, 10],
-          [14, 26, 42, 60, 80, 60, 42, 26, 14],
-          [18, 36, 56, 80, 120, 80, 56, 36, 18],
+          [10, 20, 28, 34, 40, 34, 28, 20, 10],
+          [14, 26, 32, 48, 60, 48, 32, 26, 14],
+          [18, 36, 48, 60, 80, 60, 48, 36, 18],
           [0,  3,  6,  9,  12,  9,  6,  3,  0]],
     'N': [[0, -4, 0, 0, 0, 0, 0, -4, 0],
           [0, 2, 4, 4, -2, 4, 4, 2, 0],
@@ -70,7 +70,6 @@ def points_evaluation(board, side):
         Each type of piece has a set number of points 
         Return a score between -100 and 100
     '''
-
 
     assert side == 'r' or side == 'b'
     opp = 'r' if side == 'b' else 'b'

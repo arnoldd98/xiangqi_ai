@@ -81,6 +81,11 @@ class Board:
         self.side = current_side
         self.check = '.'
         self.history = deque()
+    
+    def __eq__(self, __o: object) -> bool:
+        if type(__o) != Board:
+            return False
+        return self.board == __o.board and self.side == __o.side and self.check == __o.check
 
     def fen_to_board(self, fen):
         '''
@@ -98,6 +103,27 @@ class Board:
                     board[row_idx][col_idx] = self._fen_to_piece(fen_piece)
                     col_idx += 1
         return board
+    
+    def get_fen(self):
+        '''
+            Convert a 2D array of pieces to a xiangqiFEN string
+        '''
+        fen = ''
+        for row in self.board:
+            fen += '/'
+            n_empty = 0
+            for piece in row:
+                if piece == '.':
+                    n_empty += 1
+                else:
+                    if n_empty != 0:
+                        fen += str(n_empty)
+                        n_empty = 0
+                    fen += self._piece_to_fen(piece)
+            if n_empty != 0:
+                fen += str(n_empty)
+            n_empty = 0
+        return fen[1:]
 
     def set_side(self, side):
         self.side = side
@@ -119,7 +145,7 @@ class Board:
             self.undo()
             return score
 
-        ordered_moves = sorted(possible_moves, key=move_score, reverse=side=='b')
+        ordered_moves = sorted(possible_moves, key=move_score, reverse=True)
         return ordered_moves
         
     def make_move(self, move, change_side=False):
@@ -305,6 +331,12 @@ class Board:
             return 'b' + fen_piece.upper()
         else:
             return 'r' + fen_piece.upper()
+    
+    def _piece_to_fen(self, piece):
+        if piece[0] == 'b':
+            return piece[1].lower()
+        else:
+            return piece[1]
     
     def _check_out_of_board(self, col_idx, row_idx):
         return row_idx < 0 or row_idx >= ROW_LENGTH or col_idx <  0 or col_idx >= COL_LENGTH

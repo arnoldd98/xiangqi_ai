@@ -2,12 +2,50 @@ from math import inf
 import random
 from ai.board import Board
 from ai.evaluation import basic_evaluation, points_evaluation
-# from evaluation import basic_evaluation
+
+'''
+    Simple greedy approach that returns the move that produces the best basic evaluation result
+'''
+def greedy(board, maximizing_colour):
+    moves = board.get_moves()
+    best_move = None
+    best_score = -inf
+    for move in moves:
+        board.make_move(move, change_side=False)
+        score = basic_evaluation(board, maximizing_colour)
+        board.undo(change_side=False)
+        if score > best_score:
+            best_score = score
+            best_move = move
+    return best_move
+
+hashmap = dict()
+hash_counts = 0
+buffer = []
+'''
+    Transposition table to hold previously explored boards. Works similarly to a cache.
+'''
+def add_to_hashmap(hashkey, hashmap_size, val):
+    global hash_counts, hashmap, buffer
+    if hash_counts == hashmap_size:
+        for key in buffer[:int(hashmap_size/10)]:
+            hashmap.pop(key)
+        buffer = buffer[int(hashmap/10):]
+    else:
+        hash_counts += 1 
+        
+    hashmap[hashkey] = val
+    buffer.append(hashkey)
 
 '''
     Minimax algorithm with alpha-beta pruning
 '''
-def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour):
+def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour, hashmap_size=10000):
+    hashkey = board.side + ' ' + board.get_fen()
+    if hashkey in hashmap:
+        return hashmap[hashkey]
+    
+    # moves = board.get_moves()
     moves = board.get_ordered_moves(board.side)
     if depth == 0 or board.is_checkmate(): # if no possible moves, checkmate
         return None, points_evaluation(board, maximizing_colour)
@@ -22,9 +60,11 @@ def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour):
             if current_eval > max_eval:
                 max_eval = current_eval
                 best_move = move
+
             alpha = max(alpha, current_eval)
             if beta <= alpha:
                 break
+        add_to_hashmap(hashkey, hashmap_size, (best_move, max_eval))
         return best_move, max_eval
     
     else:
@@ -40,5 +80,6 @@ def minimax(board, depth, alpha, beta, maximizing_player, maximizing_colour):
             beta = min(beta, current_eval)
             if beta <= alpha:
                 break
-        
+        add_to_hashmap(hashkey, hashmap_size, (best_move, min_eval))
         return best_move, min_eval  
+

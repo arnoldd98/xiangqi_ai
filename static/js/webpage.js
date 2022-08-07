@@ -260,6 +260,26 @@
             resetGame();
             gamemode = 'vs_human'
         })
+
+        $('select').change(function() {
+            var difficulty = '';
+            $('select option:selected').each(function() {
+                difficulty = $(this).val();
+                console.log(difficulty)
+                $.ajax({
+                    url: '/ai/set_difficulty',
+                    type: 'POST',
+                    data: ({
+                        difficulty: difficulty
+                    }),
+                    success: function (response) {
+                        console.log(response)
+                    }
+                })
+            });
+            
+        })
+
     }
     function updateHistory(text){
         $history.html($history.html()+ '<br/>' + text);
@@ -314,6 +334,7 @@
             }
         }
     }
+
     function formattedGrave(text){
         return (
             '兵:' + text['兵'] + '<br/>' +
@@ -325,9 +346,11 @@
             '将:' + text['将'] + '<br/>' 
         );
     }
+
     function resetHistory(){
         $history.html("");
     }
+
     function resetGrave(){
         grave1['兵'] = 0;
         grave1['士'] = 0;
