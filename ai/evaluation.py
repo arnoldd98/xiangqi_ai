@@ -94,8 +94,6 @@ def points_evaluation(board, side):
                 if piece_type in PIECE_POS_SCORE.keys():
                     score -= PIECE_POS_SCORE[piece_type][side_row_idx][col_idx]
 
-
     if board.is_check(side):
         score -= 50
     return score
-

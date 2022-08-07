@@ -1,7 +1,8 @@
 import copy
 from copy import deepcopy
-from prettyprinter import pprint
+from pprint import pprint
 from collections import deque
+from ai.evaluation import points_evaluation
 
 '''
     Notations:
@@ -197,6 +198,23 @@ class Board:
         self.moves = legal_moves
         
         return legal_moves
+
+    def get_ordered_moves(self, side):
+        '''
+        Get a list of possible moves that are ordered based on their evaluation scores.
+        (Ascending order for black side - maximising)
+        (Descending order for red side - minimising)
+        '''
+        possible_moves = self.generate_moves(side)
+        
+        def move_score(move):
+            self.make_move(move)
+            score = points_evaluation(self.board, side)
+            self.undo()
+            return score
+
+        ordered_moves = sorted(possible_moves, key=move_score, reverse=side=='b')
+        return ordered_moves
     
     def is_checkmate(self):
         moves = self.generate_moves(self.side)
